@@ -1,17 +1,25 @@
+/* Import your custom font */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
+/* Tailwind base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Global overrides */
 * {
   font-family: "Outfit", sans-serif;
+  scrollbar-width: none; /* Firefox */
 }
 
-/* Hide scrollbar cross-browser */
+/* Hide scrollbar for Chrome, Safari, Edge */
 ::-webkit-scrollbar {
   display: none;
 }
-* {
-  scrollbar-width: none; /* Firefox */
-}
+/* @tailwind base; → resets & normalizes CSS.
+
+@tailwind components; → registers reusable component classes.
+
+@tailwind utilities; → provides all the utility classes (like flex, bg-primary, text-xl).
+
+Custom CSS (like font + scrollbar hiding) comes after Tailwind so it overrides properly. */
