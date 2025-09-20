@@ -1,16 +1,45 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { assets, blogCategories } from '../../assets/assets'
-import Quill from 'quill'
+import React, { useEffect, useRef, useState } from 'react';
+import { assets, blogCategories } from '../../assets/assets';
+import Quill from 'quill';
+import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
 const AddBlog = () => {
-    const editorRef = useRef(null)
-    const quillRef = useRef(null)
-    const [image,setImage] = useState(false)
-    const [title,setTitle] = useState('')
-    const [subTitle,setSubTitle] = useState('')
-    const [category,setCategory] = useState('StartUp')
-    const [isPublished,setIsPublished] = useState(false)
+    const editorRef = useRef(null);
+    const quillRef = useRef(null);
+    const [image, setImage] = useState(false);
+    const [title, setTitle] = useState('');
+    const [subTitle, setSubTitle] = useState('');
+    const [category, setCategory] = useState('Startup');
+    const [isPublished, setIsPublished] = useState(true);
+    const { axios, fetchBlogs } = useAppContext();
+    const navigate = useNavigate();
+
     const onSubmitHandler = async(e) =>{
-          e.preventDefault();
+        e.preventDefault();
+        const description = quillRef.current.root.innerHTML;
+        if (!image || !title || !description || !category) {
+            return toast.error("All fields are required");
+        }
+
+        const blogData = { title, subTitle, description, category, isPublished };
+        const formData = new FormData();
+        formData.append('image', image);
+        formData.append('blog', JSON.stringify(blogData));
+
+        try {
+            const { data } = await axios.post('/api/blog/add', formData);
+            if (data.success) {
+                toast.success("Blog added successfully");
+                await fetchBlogs();
+                navigate('/admin/listBlog');
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
      const generateContent= async(e) =>{
           
@@ -44,7 +73,7 @@ const AddBlog = () => {
              <select onChange={(e)=>setCategory(e.target.value)} value={category} name= 'category' className='mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded'>
                 <option value=''>Select Category</option>
                 {blogCategories.map((item,index)=>{
-                    return <option vlaue={item} key ={index} >{item}</option>
+                    return <option value={item} key ={index} >{item}</option>
                 })}
              </select>
         <div className='flex gap-2 mt-4'>

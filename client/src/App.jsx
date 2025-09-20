@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Routes ,Route} from 'react-router-dom'
+import { Routes ,Route, Router} from 'react-router-dom'
 import Home from './pages/Home'
 import Blog from './pages/Blog'
 import Layout from './pages/admin/Layout'
@@ -15,6 +15,7 @@ const App = () => {
   const {token} = useAppContext();
   return (
     <div>
+      
       <Toaster/>
       <Routes>
         <Route path = '/' element = {<Home/>} />
@@ -27,6 +28,7 @@ const App = () => {
            <Route path = 'comments' element={<Comments/>} />
            </Route>
       </Routes>
+      
     </div>
   )
 }

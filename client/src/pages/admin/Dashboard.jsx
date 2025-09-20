@@ -1,15 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { assets, dashboard_data } from '../../assets/assets'
-import BlogTable from '../../components/admin/BlogTable'
+import React, { useEffect, useState } from 'react';
+import { assets } from '../../assets/assets';
+import BlogTable from '../../components/admin/BlogTable';
+import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
+
 const Dashboard = () => {
     const [dashboardData,setDashboardData] =useState({
         blogs:0,
         comments:0,
         drafts:0,
         recentBlogs:[]
-    })
+    });
+    const { axios } = useAppContext();
+
     const fetchDashboard = async()=>{
-        setDashboardData(dashboard_data)
+        try {
+            const { data } = await axios.get('/api/admin/dashboard');
+            if (data.success) {
+                setDashboardData(data.dashboardData);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
     useEffect(()=>{
         fetchDashboard()
@@ -20,21 +34,21 @@ const Dashboard = () => {
         <div className='flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all'>
             <img src = {assets.dashboard_icon_1}/>
             <div >
-               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.blogs}</p>
+               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.blogs || 0}</p>
                <p className='text-gray-400 font-light'>Blogs</p>
             </div>
         </div>
         <div className='flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all'>
             <img src = {assets.dashboard_icon_2}/>
             <div >
-               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.blogs}</p>
+               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.comments || 0}</p>
                <p className='text-gray-400 font-light'>Comments</p>
             </div>
         </div>
         <div className='flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all'>
             <img src = {assets.dashboard_icon_3}/>
             <div >
-               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.blogs}</p>
+               <p className='text-xl font-semibold text-gray-600 '>{dashboardData.drafts || 0}</p>
                <p className='text-gray-400 font-light'>Drafts</p>
             </div>
         </div>
