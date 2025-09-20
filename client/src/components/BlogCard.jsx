@@ -1,30 +1,25 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-const BlogCard = ({blog}) => {
-    const {title, description, category, image, _id, id, subTitle} = blog;
-    const blogId = _id || id;
-    const navigate = useNavigate();
+const BlogCard = ({ blog }) => {
 
-    const handleNavigate = () => {
-      if (blogId) {
-        console.log("Navigating to", `/blog/${blogId}`);
-        navigate(`/blog/${blogId}`);
-      } else {
-        console.error("Blog ID is missing, cannot navigate.", blog);
-      }
-    };
+  // Ensure description is a string before calling substring to prevent errors.
+  const descriptionSnippet = (blog.description || '').substring(0, 100) + '...';
 
   return (
-    <div onClick={handleNavigate} className='w-full rounded-lg overflow-hidden shadow-lg hover:scale-105 hover:shadow-primary/25 duration-300 cursor-pointer group'>
-      <img src={image} alt={title} className='w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out'/>
-      <div className='p-4'>
-        <span className='inline-block bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-semibold mr-2 mb-2'>#{category}</span>
-        <h5 className='mt-2 mb-2 font-bold text-xl text-gray-800 truncate'>{title}</h5>
-        <p className='mb-3 text-base text-gray-700 truncate' dangerouslySetInnerHTML={{ "__html" : subTitle || description?.slice(0, 100) }}></p>
+    <Link to={`/blog/${blog._id}`} className="block relative z-20">
+      <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer h-full bg-white">
+        {/* Card content */}
+        <img src={blog.image} alt={blog.title || 'Blog post image'} className="w-full h-48 object-cover" />
+        <div className="p-4">
+          <p className="text-sm text-gray-500">{blog.category || 'Uncategorized'}</p>
+          <h3 className="text-lg font-semibold my-2">{blog.title || 'Untitled Blog'}</h3>
+          {/* You might want to add a snippet of the description */}
+          <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: descriptionSnippet }}></div>
+        </div>
       </div>
-    </div>
-  )
-}
+    </Link>
+  );
+};
 
-export default BlogCard
+export default BlogCard;

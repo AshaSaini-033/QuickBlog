@@ -1,5 +1,6 @@
 import React from 'react'
 import { assets } from '../assets/assets'
+import { Link } from 'react-router-dom'
 const Fotter = () => {
   return (
     <div>
@@ -12,9 +13,9 @@ const Fotter = () => {
         <div  className='flex-1'>
           <h1 className='text-black font-semibold text-s mb-2'>Quick Links</h1>
           <ul className='text-gray-600 text-xs '>
-            <li><a  className='hover:underline'href='#'> Home</a></li>
-            <li><a className='hover:underline' href='#'> Best Seller</a></li>
-            <li> <a  className='hover:underline'href='#'> Offers & Deals</a></li>
+            <li><Link to='/' className='hover:underline'>Home</Link></li>
+            <li><Link to='/' className='hover:underline'>Best Seller</Link></li>
+            <li><Link to='/' className='hover:underline'>Offers & Deals</Link></li>
             <li>Contact Us</li>
             <li>FAQ's</li>
           </ul>

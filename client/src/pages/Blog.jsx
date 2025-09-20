@@ -10,8 +10,8 @@ import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
 
 const Blog = () => {
-  const {id} = useParams();
-  const {axios} = useAppContext();
+  const { id: blogId } = useParams(); // Correctly get `id` from URL and rename to `blogId`
+  const {axios, blogs} = useAppContext();
   const [data,setData] = useState(null)
   const [comments,setComments] = useState([])
   // controlled ip field 
@@ -20,8 +20,10 @@ const Blog = () => {
 
   const fetchBlogData = async()=>{
    try{
-    const {data} = await axios.get(`/api/blog/${id}`)
-    data.success?setData(data.blog) : toast.error(data.message)
+    const response = await axios.get(`/api/blog/${blogId}`)
+    if (response.data.success) {
+      setData(response.data.blog)
+    } else { toast.error(response.data.message) }
    }catch(error){
     console.log(error)
     toast.error(error.message)
@@ -29,7 +31,7 @@ const Blog = () => {
   }
   const fetchComments =async()=>{
     try{
-      const {data} = await axios.post('/api/blog/comments',{blogId:id})
+      const {data} = await axios.post('/api/blog/comments',{blogId: blogId})
       if(data.success){
         setComments(data.comments)
       }
@@ -48,7 +50,7 @@ const Blog = () => {
     }
     try {
       const response = await axios.post('/api/blog/add-comment', {
-        blogId: id,
+        blogId: blogId,
         name,
         content
       });
@@ -66,9 +68,17 @@ const Blog = () => {
     }
   }
   useEffect(()=>{
-    fetchBlogData();
-    fetchComments();
-  },[id])
+    // Try to find the blog in the context first
+    const blogFromContext = blogs.find(blog => blog._id === blogId);
+
+    if (blogFromContext) {
+        setData(blogFromContext);
+    } else {
+        // If not found, fetch it from the API
+        if (blogId) fetchBlogData();
+    }
+    if (blogId) fetchComments();
+  },[blogId, blogs])
   return data ? (
     <div className='relative'>
       <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 opacity-50 '/>
@@ -76,15 +86,15 @@ const Blog = () => {
       {/* title desc author name date  */}
       {/* install i for format date */}
      <div className='text-center mt-20 text-gray-600'>
-      <p className='text-primary py-4 font-medium '>Published on {Moment(data.createdAt).format('MMMM Do YYYY')}</p>
-      <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800'>{data.title}</h1>
-      <h2 className='my-5 max-w-lg truncate mx-auto '>{data.subTitle}</h2>
+      <p className='text-primary py-4 font-medium '>{data.createdAt ? `Published on ${Moment(data.createdAt).format('MMMM Do YYYY')}`: 'Date not available'}</p>
+      <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800'>{data.title || 'Untitled Post'}</h1>
+      <h2 className='my-5 max-w-lg truncate mx-auto '>{data.subTitle || ''}</h2>
       <p className='inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary'>{data.author || 'Michiel Jason'}</p>
      </div>
      {/* blog image desc comment commt box social media icon */}
      <div className='mx-5 max-w-5xl md:mx-auto my-10 mt-6'>
-      <img  src ={data.image}/>
-      <div className='rich-text mx-w-3xl mx-auto' dangerouslySetInnerHTML={{__html:data.description}}></div>
+      {data.image && <img src={data.image} alt={data.title || 'Blog post image'} className='w-full'/>}
+      <div className='rich-text mx-w-3xl mx-auto' dangerouslySetInnerHTML={{__html: data.description || '<p>No content available.</p>'}}></div>
       {/* comment section */}
       <div className='mt-14 mb-10 max-w-3xl mx-auto'>
           <p className='mb-2'>Comments ({comments.length})</p>
