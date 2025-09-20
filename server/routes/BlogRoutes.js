@@ -8,7 +8,7 @@ const blogRouter = express.Router();
 // add in req.file
 blogRouter.post('/add',upload.single('image') ,auth, addBlog)
 blogRouter.get('/all' ,getAllBlogs)
-blogRouter.get('/:blogId',getBlogById);
+blogRouter.get('/:id',getBlogById);
 // only admin can delet
 blogRouter.post('/delete',auth,deleteBlogById)
 blogRouter.post('/toggle-publish',auth,togglePublish);
