@@ -1,20 +1,22 @@
-import { Children, useContext, useEffect, useState } from "react";
+import React,{createContext,  useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { createContext, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 
 const AppContext = createContext();
 
-export const AppProvider = ({Children})=>{
+export const AppProvider = ({children})=>{
     const navigate = useNavigate();
     const [token,setToken] = useState(null)
-    const [blog,setBlogs] = useState([]);
+    const [blogs,setBlogs] = useState([]);
     const [input ,setInput]  = useState('') //filter blogs
     const fetchBlogs = async()=>{
         try{
             //already added baseurl
             const {data} = await axios.get('/api/blog/all');
+            console.log("data is :",data)
             data.success ? setBlogs(data.blogs) : toast.error(data.message)
         }
         catch(error){
@@ -30,15 +32,15 @@ export const AppProvider = ({Children})=>{
             setToken(token);
             axios.defaults.headers.common['Authorization'] =`${token}`
             //add when token available in all api cals
-        }
+        }  
 
     },[])
     const value={
-        axios,navigate,token,setToken,blog,setBlogs,input,setInput
+        axios,navigate,token,setToken,blogs,setBlogs,input,setInput
     }
     return (
         <AppContext.Provider value ={value}>
-            {Children}
+            {children}
         </AppContext.Provider>
     )
 }

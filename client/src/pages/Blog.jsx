@@ -6,9 +6,11 @@ import Navbar from '../components/Navbar';
 import Moment from 'moment'
 import Fotter from '../components/Fotter';
 import Loader from '../components/Loader';
+import { useAppContext } from '../context/AppContext';
 
 const Blog = () => {
   const {id} = useParams();
+  const {axios} = useAppContext();
   const [data,setData] = useState([])
   const [comments,setComments] = useState([])
   // controlled ip field 
@@ -16,11 +18,27 @@ const Blog = () => {
   const [content,setContent] = useState('');
 
   const fetchBlogData = async()=>{
-   const data= blog_data.find(item=>item._id===id)
-    setData(data)
+   try{
+    const {data} = await axios.get(`/api/blog/${id}`)
+    data.success?setData(data.blog) : toast.error(data.message)
+   }catch(error){
+    console.log(error)
+    toast.error(error.message)
+   }
   }
   const fetchComments =async()=>{
-    setComments(comments_data)
+    try{
+      const {data} = await axios.post('/api/blog/comments',{id})
+      if(data.success){
+        setComments(data.comments)
+      }
+      else{
+        toast.error(data.message)
+      }
+    }catch(error){
+    console.log(error)
+    toast.error(error.message)
+   }
   }
   const addComments = async(e)=>{
     e.preventDefault()
@@ -73,10 +91,10 @@ fetchComments()
       {/* share button */}
       <div className='my-24 max-w-3xl mx-auto'>
 <p className='font-semibold my-4 '>Share this article on social media</p>
-<div className='flex '>
-  <img src={assets.facebook_icon} width={50} alt="" />
-  <img src={assets.twitter_icon} width={50}alt="" />
-  <img src={assets.googleplus_icon}width={50} alt="" />
+<div className='flex'>
+  <img src={assets.facebook_icon} width={50}   alt="" />
+  <img src={assets.twitter_icon} width={50}    alt="" />
+  <img src={assets.googleplus_icon} width={50}  alt="" />
 </div>
       </div>
       <Fotter/>
