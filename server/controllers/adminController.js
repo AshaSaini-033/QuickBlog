@@ -55,9 +55,6 @@ export const deleteCommentById =async(req,res)=>{
     try{
         const {id} = req.body
         await Comment.findByIdAndDelete(id)
-
-        //delete all cmmt associated with  the blog deleted
-        await Comment.deleteMany({blog:id});
         res.json({success:true,message:"Comment deleted successfully"})
     }catch(error){
         res.json({success:false,message:error.message})
