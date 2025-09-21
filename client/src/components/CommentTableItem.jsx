@@ -9,8 +9,11 @@ const CommentTableItem = ({comment,fetchComments}) => {
     const BlogDate = new Date(createdAt);
 
     const handleApprove = async () => {
+        const token = localStorage.getItem("token");
         try {
-            const {data} = await axios.post('/api/admin/approve-comment', {id: _id});
+            const {data} = await axios.post('/api/admin/approve-comment', {id: _id}, {
+                headers: { Authorization: `${token}` }
+            });
             if(data.success){
                 toast.success("Comment approved");
                 fetchComments();
@@ -23,9 +26,12 @@ const CommentTableItem = ({comment,fetchComments}) => {
     }
 
     const handleDelete = async () => {
+        const token = localStorage.getItem("token");
         if(window.confirm("Are you sure you want to delete this comment?")){
             try {
-                const {data} = await axios.post('/api/admin/delete-comment', {id: _id});
+                const {data} = await axios.post('/api/admin/delete-comment', {id: _id}, {
+                    headers: { Authorization: `${token}` }
+                });
                 if(data.success){
                     toast.success("Comment deleted");
                     fetchComments();
@@ -39,15 +45,15 @@ const CommentTableItem = ({comment,fetchComments}) => {
     }
 
   return (
-    <tr className='order-y border-gray-300' >
-     <td className='px-6 py-4'>
-        <b className='text-gray-600 font-medium'>Blog</b> :{blog.title}
-        <br/>
-        <br/>
-        <b className='text-gray-600 font-medium'>Name</b> :{comment.name}
-        <br/>
-        <b className='text-gray-600 font-medium'>Comments</b> :{comment.content}
-     </td>
+    <tr className='border-y border-gray-300' >
+    <td className='px-6 py-4'>
+  <b className='text-gray-600 font-medium'>Blog</b> : 
+  {blog?.title || <span className='text-red-500 font-semibold'>[Blog has been deleted]</span>}
+  <br/>
+  <b className='text-gray-600 font-medium'>Name</b> : {comment.name}
+  <br/>
+  <b className='text-gray-600 font-medium'>Comments</b> : {comment.content}
+</td>
      <td className='px-6 py-4 max-sm:hidden'>
         {BlogDate.toLocaleDateString()}
      </td>

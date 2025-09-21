@@ -31,7 +31,6 @@ export const AppProvider = ({children})=>{
         if(token){
             setToken(token);
             axios.defaults.headers.common['Authorization'] =`${token}`
-            //axios.defaults.headers.common['Authorization'] =`Bearer ${token}`
             //add when token available in all api cals
         }  
 

@@ -4,6 +4,8 @@ import Quill from 'quill';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import {parse} from 'marked'
+import Loader from '../../components/Loader';
 
 const AddBlog = () => {
   
@@ -16,6 +18,7 @@ const AddBlog = () => {
     const [isPublished, setIsPublished] = useState(true);
     const { axios, fetchBlogs ,navigate,token} = useAppContext();
     const [isAdding,setIsAdding] = useState(false)
+     const [loading,setLoading] = useState(false)
     //  console.log('Token:', token);
 
     const onSubmitHandler = async(e) =>{
@@ -60,8 +63,22 @@ const AddBlog = () => {
         }
         
     }
-     const generateContent= async(e) =>{
-          
+     const generateContent= async() =>{
+          if(!title) return toast.error("Please Enter the Title")
+            try{
+         setLoading(true);
+         const {data } = await axios.post('/api/blog/generate',{prompt:title})
+         if(data.success){
+            quillRef.current.root.innerHTML = parse(data.content)
+         }
+         else{
+             toast.error(data.message)
+         }
+        }catch(error){
+            toast.error(error.message)
+        }finally{
+            setLoading(false)
+        }
     }
     // inttiate quill only once
     useEffect(()=>{
@@ -84,9 +101,15 @@ const AddBlog = () => {
              <p className='mt-4'>sub Title</p>
             <input type='text' placeholder='Type here' required className='w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded' onChange={e=>setSubTitle(e.target.value)} value={subTitle}/>
             <p className='mt-4'>Blog Description</p>
-            <div className='max-w-lg h-[300px] pb-16 sm:pb-10 pt-2 relative'>
+            <div   className='max-w-lg h-[300px] pb-16 sm:pb-10 pt-2 relative'>
                 <div ref= {editorRef}></div>
-                <button className='absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer ' onClick={generateContent}>Generate with AI</button>
+               {loading && 
+               (<div className='absolute right-0 top-0 bottom-0 left-0 flex items-center justify-center bg-black/10 mt-2'>
+                <div className='w-8 h-8 rounded-full border-2'></div>
+                </div>)
+                 }
+                {/* disable when loading true */}
+                <button type="button" disabled={loading} className='absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer ' onClick={generateContent}>Generate with AI</button>
             </div>
              <p className='mt-4'>Category</p>
              <select onChange={(e)=>setCategory(e.target.value)} value={category} name= 'category' className='mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded'>

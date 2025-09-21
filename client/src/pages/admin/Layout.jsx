@@ -9,7 +9,7 @@ const Layout = () => {
 
     const logout = ()=>{
       localStorage.removeItem('token')
-      axios.default.headers.common['Authorization' ] = null;
+      axios.defaults.headers.common['Authorization' ] = null;
       setToken(null)
    navigate('/')
     }
