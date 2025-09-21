@@ -1,5 +1,5 @@
 import express from 'express'
-import { addBlog, addComment, deleteBlogById, getAllBlogs, getBlogById, getBlogComment, togglePublish } from '../controllers/blogController.js';
+import { addBlog, addComment, deleteBlogById, generateContent, getAllBlogs, getBlogById, getBlogComment, togglePublish } from '../controllers/blogController.js';
 import upload from '../middleware/multer.js';
 import auth from '../middleware/auth.js';
 
@@ -14,7 +14,8 @@ blogRouter.post('/delete',auth,deleteBlogById)
 blogRouter.post('/toggle-publish',auth,togglePublish);
 blogRouter.post('/add-comment',addComment);
 //commts list fro individual blog
-blogRouter.get('/comments',getBlogComment)
+blogRouter.post('/comments',getBlogComment)
+blogRouter.post('/generate',auth,generateContent)
 //need mw to parse image whivh upload from frontend use multer pacakge
 
 export default blogRouter;
