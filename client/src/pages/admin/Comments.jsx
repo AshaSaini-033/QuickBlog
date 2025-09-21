@@ -7,10 +7,12 @@ const Comments = () => {
     const [comments, setComments] = useState([]);
     const [filter, setFilter] = useState('Not Approved');
     const { axios } = useAppContext();
-
+  const token = localStorage.getItem('token')
     const fetchComments = async () => {
         try {
-            const { data } = await axios.get('/api/admin/comments');
+            const { data } = await axios.get('/api/admin/comments',{headers:{
+                Authorization:`${token}`
+            }});
             if (data.success) {
                 setComments(data.comments);
             } else {

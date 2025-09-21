@@ -9,7 +9,14 @@ const ListBlog = () => {
 
     const fetchBlogs=async()=>{
         try {
-            const { data } = await axios.get('/api/admin/blogs');
+            //token liya 
+             const token = localStorage.getItem("token");
+    console.log("Axios headers test:", token);
+ //then pass kiya
+            const { data } = await axios.get('/api/admin/blogs',{
+  headers: {
+    Authorization: `${token}`,
+  },});
             if (data.success) {
                 setBlogs(data.blogs);
             } else {

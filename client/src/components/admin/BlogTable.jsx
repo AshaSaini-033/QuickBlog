@@ -9,9 +9,14 @@ const BlogTable = ({blog,fetchBlogs,index}) => {
     const BlogDate = new Date(createdAt);
 
     const handleDelete = async () => {
+    const token = localStorage.getItem("token");
+    console.log("Axios headers test:", token);
         if(window.confirm("Are you sure you want to delete this blog?")){
             try {
-                const {data} = await axios.post('/api/blog/delete', {id: _id});
+                const {data} = await axios.post('/api/blog/delete',{id:blog._id}, {
+  headers: {
+    Authorization: `${token}`,
+  },});
                 if(data.success){
                     toast.success("Blog deleted successfully");
                     fetchBlogs();
@@ -25,8 +30,13 @@ const BlogTable = ({blog,fetchBlogs,index}) => {
     }
 
     const handlePublish = async () => {
+          const token = localStorage.getItem("token");
+    console.log("Axios headers test:", token);
         try {
-            const {data} = await axios.post('/api/blog/toggle-publish', {id: _id});
+            const {data} = await axios.post('/api/blog/toggle-publish', {id: blog._id},  {
+  headers: {
+    Authorization: `${token}`,
+  },});
             if(data.success){
                 toast.success("Blog status updated");
                 fetchBlogs();

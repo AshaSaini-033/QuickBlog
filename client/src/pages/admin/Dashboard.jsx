@@ -5,6 +5,7 @@ import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
+    
     const [dashboardData,setDashboardData] =useState({
         blogs:0,
         comments:0,
@@ -12,10 +13,12 @@ const Dashboard = () => {
         recentBlogs:[]
     });
     const { axios } = useAppContext();
-
+  const token = localStorage.getItem('token')
     const fetchDashboard = async()=>{
         try {
-            const { data } = await axios.get('/api/admin/dashboard');
+            const { data } = await axios.get('/api/admin/dashboard',{headers:{
+                Authorization:`${token}`
+            }});
             if (data.success) {
                 setDashboardData(data.dashboardData);
             } else {

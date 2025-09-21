@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const AddBlog = () => {
+  
     const editorRef = useRef(null);
     const quillRef = useRef(null);
     const [image, setImage] = useState(false);
@@ -13,33 +14,51 @@ const AddBlog = () => {
     const [subTitle, setSubTitle] = useState('');
     const [category, setCategory] = useState('Startup');
     const [isPublished, setIsPublished] = useState(true);
-    const { axios, fetchBlogs } = useAppContext();
-    const navigate = useNavigate();
+    const { axios, fetchBlogs ,navigate,token} = useAppContext();
+    const [isAdding,setIsAdding] = useState(false)
+    //  console.log('Token:', token);
 
     const onSubmitHandler = async(e) =>{
         e.preventDefault();
+        setIsAdding(true);
+         try {
         const description = quillRef.current.root.innerHTML;
         if (!image || !title || !description || !category) {
             return toast.error("All fields are required");
         }
 
-        const blogData = { title, subTitle, description, category, isPublished };
+        const blog = { 
+            title, subTitle, description, category, isPublished };
         const formData = new FormData();
-        formData.append('image', image);
-        formData.append('blog', JSON.stringify(blogData));
+       
+        formData.append('blog', JSON.stringify(blog));
+         formData.append('image', image);
 
-        try {
-            const { data } = await axios.post('/api/blog/add', formData);
+       //send datat to api end point
+       console.log("Token header:", `Bearer ${token}`);
+
+            const { data } = await axios.post('/api/blog/add', formData, {
+  headers: {
+    'Authorization': ` ${token}`,
+    'Content-Type': 'multipart/form-data',
+  },});
             if (data.success) {
                 toast.success("Blog added successfully");
-                await fetchBlogs();
-                navigate('/admin/listBlog');
+                setImage(false)
+                setTitle('')
+                setCategory('Startup')
+             
+                // await fetchBlogs();
+                // navigate('/admin/listBlog');
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
             toast.error(error.message);
+        }finally{
+            setIsAdding(false)
         }
+        
     }
      const generateContent= async(e) =>{
           
@@ -80,7 +99,8 @@ const AddBlog = () => {
             <p>Publish Now</p>
             <input type = 'checkbox' checked={isPublished} className='scale-125 cursor-pointer ' onChange={e=>setIsPublished(e.target.checked)}/>
         </div>
-        <button type = 'submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm'>Add Blog</button>
+        <button disabled={isAdding} type = 'submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm'>{
+            isAdding?'Adding..':"Add Blog"}</button>
         </div>
     </form>
   )
