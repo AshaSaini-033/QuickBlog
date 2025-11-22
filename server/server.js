@@ -6,7 +6,6 @@ import adminRouter from './routes/adminRoutes.js';
 import blogRouter from './routes/BlogRoutes.js';
 
 const app = express();
- await connectDB()//created app
 //middleware
 
 app.use(cors())
@@ -19,8 +18,18 @@ app.use('/api/blog',blogRouter)
 
 const PORT = process.env.PORT ||3000;
 
-app.listen(PORT,()=>{
-    console.log('server is running on port '+PORT)
-})
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log('server is running on port ' + PORT);
+        });
+    } catch (error) {
+        console.error("Failed to connect to the database", error);
+        process.exit(1);
+    }
+};
+
+startServer();
 
 export default app;

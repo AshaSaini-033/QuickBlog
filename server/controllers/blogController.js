@@ -112,11 +112,17 @@ export const getBlogComment = async(req,res)=>{
 
 export const generateContent =async(req,res) =>{
     try{
+        console.log("Received request to generate content...");
         const {prompt} = req.body;
+        if (!prompt) {
+            return res.status(400).json({ success: false, message: "Prompt cannot be empty." });
+        }
+        console.log("Calling Google AI API...");
         const content = await main(prompt+'Generate the blog content for this topic in simple text format')
+        console.log("Successfully received content from AI.");
        res.json({success:true,content})
-
     }catch(error){
-        res.json({succes:false,message:error.message})
+        console.error("Error during AI content generation:", error);
+        res.status(500).json({success:false,message:error.message})
     }
 }
