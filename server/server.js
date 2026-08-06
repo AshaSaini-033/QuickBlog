@@ -8,7 +8,14 @@ import blogRouter from './routes/BlogRoutes.js';
 const app = express();
 //middleware
 
-app.use(cors())
+const corsOptions = {
+  // Yahan apne frontend ka URL daalein jo Render par deploy hoga
+  // Example: 'https://quickblog-client.onrender.com'
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 app.use(express.json())
 //Routes
 //home
